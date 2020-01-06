@@ -21,7 +21,7 @@ def iter_camera(capture: cv2.VideoCapture) -> Iterator[Tuple[Any, np.ndarray]]:
 
 
 def main():
-    with releasing(cv2.VideoCapture()) as capture:
+    with releasing(cv2.VideoCapture(0)) as capture:
         thing(capture)
 
 
