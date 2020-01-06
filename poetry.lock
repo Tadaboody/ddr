@@ -186,9 +186,8 @@ parso = ">=0.5.2"
 testing = ["colorama (0.4.1)", "docopt", "pytest (>=3.9.0,<5.0.0)"]
 
 [[package]]
-category = "dev"
+category = "main"
 description = "More routines for operating on iterables, beyond itertools"
-marker = "python_version < \"3.8\""
 name = "more-itertools"
 optional = false
 python-versions = ">=3.5"
@@ -443,7 +442,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "contextlib2", "unittest2"]
 
 [metadata]
-content-hash = "010ef6a62d16e442e95792ea71af31d5a44a4ece27e38da0ec94af160859256f"
+content-hash = "ace06340e242a064d2d952e8bbc6773d780db48fbbc801fb6aad9c6509de4d5c"
 python-versions = "^3.7"
 
 [metadata.files]

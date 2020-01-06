@@ -1,4 +1,5 @@
 import typing
+import more_itertools
 from contextlib import contextmanager
 from typing import Any, Iterator, Tuple
 
@@ -25,20 +26,15 @@ def main():
         thing(capture)
 
 
-def prev_and_current(iterator: typing.Iterable):
-    iterator = iter(iterator)
-    previous = next(iterator)
-    for current in iterator:
-        yield previous, current
-        previous = current
 
-
-def gray_make(iterator: typing.Iterable[np.ndarray]):
+def gray_make(iterator: typing.Iterable[np.ndarray]) -> typing.Iterator[np.ndarray]:
     return (cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) for frame in iterator)
 
 
 def thing(capture: cv2.VideoCapture):
-    for prev_frame, frame in prev_and_current(gray_make(iter_camera(capture))):
+    for prev_frame, frame in more_itertools.windowed(
+        gray_make(iter_camera(capture)), 2
+    ):
         # Our operations on the frame come here
         diff = cv2.absdiff(frame, prev_frame)
         # Display the resulting frame
