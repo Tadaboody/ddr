@@ -13,11 +13,14 @@ def releasing(capture):
     capture.destroyAllWindows()
 
 
-def iter_camera(capture: cv2.VideoCapture) -> Iterator[Tuple[Any, np.ndarray]]:
+def iter_camera(
+    capture: cv2.VideoCapture, end_char="q"
+) -> Iterator[Tuple[Any, np.ndarray]]:
+    assert len(end_char) == 1
     while capture.isOpened():
         ret, frame = capture.read()
         yield frame
-        if cv2.waitKey(10) & 0xFF == ord("q"):
+        if cv2.waitKey(1) & 0xFF == ord(end_char):
             break
 
 
@@ -26,20 +29,32 @@ def main():
         thing(capture)
 
 
+def grayscale(frame: np.ndarray) -> np.ndarray:
+    return cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-def gray_make(iterator: typing.Iterable[np.ndarray]) -> typing.Iterator[np.ndarray]:
-    return (cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) for frame in iterator)
+
+class Slider:
+    """A slider added to the given window"""
+
+    def __init__(self, name: str, window_name: str, max_value: int, starting_value=0):
+        cv2.createTrackbar(
+            name, window_name, starting_value, max_value, self.__update_value
+        )
+        self.value = starting_value
+
+    def __update_value(self, new_value: int):
+        self.value = new_value
 
 
 def thing(capture: cv2.VideoCapture):
+    cv2.namedWindow("window")
+    thresh = Slider("thresh", "window", max_value=255)
     for prev_frame, frame in more_itertools.windowed(
-        gray_make(iter_camera(capture)), 2
+        map(grayscale, iter_camera(capture)), 2
     ):
-        # Our operations on the frame come here
         diff = cv2.absdiff(frame, prev_frame)
-        # Display the resulting frame
-        # cv2.imshow("frame", frame)
-        cv2.imshow("diff", diff)
+        _, threshed = cv2.threshold(diff, thresh.value, 255, cv2.THRESH_BINARY)
+        cv2.imshow("window", threshed)
 
 
 if __name__ == "__main__":
